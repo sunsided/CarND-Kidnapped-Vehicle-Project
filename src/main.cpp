@@ -32,8 +32,8 @@ int main() {
     const auto delta_t = 0.1; // Time elapsed between measurements [sec]
     const auto sensor_range = 50; // Sensor range [m]
 
-    double sigma_pos[3] = {0.3, 0.3, 0.01}; // GPS measurement uncertainty [x [m], y [m], theta [rad]]
-    double sigma_landmark[2] = {0.3, 0.3}; // Landmark measurement uncertainty [x [m], y [m]]
+    std::array<double, 3> sigma_pos {0.3, 0.3, 0.01}; // GPS measurement uncertainty [x [m], y [m], theta [rad]]
+    std::array<double, 2> sigma_landmark {0.3, 0.3}; // Landmark measurement uncertainty [x [m], y [m]]
 
     // Read map data
     Map map;
@@ -109,35 +109,41 @@ int main() {
                     pf.resample();
 
                     // Calculate and output the average weighted error of the particle filter over all time steps so far.
-                    vector<Particle> particles = pf.particles;
+                    const auto particles = pf.getParticles();
                     const auto num_particles = particles.size();
-                    double highest_weight = -1.0;
-                    Particle best_particle;
+                    assert(num_particles > 0);
+
+                    auto highest_weight = std::numeric_limits<double>::lowest();
+                    const Particle* best_particle = nullptr;
                     double weight_sum = 0.0;
                     for (const auto &particle : particles) {
                         if (particle.weight > highest_weight) {
                             highest_weight = particle.weight;
-                            best_particle = particle;
+                            best_particle = &particle;
                         }
                         weight_sum += particle.weight;
                     }
+
+                    // This should never happen when num_particles > 0.
+                    // It does help silencing nullptr warnings below though.
+                    assert(best_particle != nullptr);
+
                     cout << "highest w " << highest_weight << endl;
                     cout << "average w " << weight_sum / num_particles << endl;
 
                     json msgJson;
-                    msgJson["best_particle_x"] = best_particle.x;
-                    msgJson["best_particle_y"] = best_particle.y;
-                    msgJson["best_particle_theta"] = best_particle.theta;
+                    msgJson["best_particle_x"] = best_particle->x;
+                    msgJson["best_particle_y"] = best_particle->y;
+                    msgJson["best_particle_theta"] = best_particle->theta;
 
                     //Optional message data used for debugging particle's sensing and associations
-                    msgJson["best_particle_associations"] = pf.getAssociations(best_particle);
-                    msgJson["best_particle_sense_x"] = pf.getSenseX(best_particle);
-                    msgJson["best_particle_sense_y"] = pf.getSenseY(best_particle);
+                    msgJson["best_particle_associations"] = pf.getAssociations(*best_particle);
+                    msgJson["best_particle_sense_x"] = pf.getSenseX(*best_particle);
+                    msgJson["best_particle_sense_y"] = pf.getSenseY(*best_particle);
 
                     auto msg = "42[\"best_particle\"," + msgJson.dump() + "]";
                     // std::cout << msg << std::endl;
                     ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
-
                 }
             } else {
                 std::string msg = "42[\"manual\",{}]";
