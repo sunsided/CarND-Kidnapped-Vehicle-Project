@@ -184,11 +184,11 @@ void ParticleFilter::updateWeights(double sensor_range, const std::array<double,
         dataAssociation(landmarks_in_range, observations_transformed);
 
         // Calculate the particle weight and set associations.
-        vector<int> associations;
+        vector<size_t> associations;
         vector<double> sense_x;
         vector<double> sense_y;
 
-        particle.weight = 1;
+        particle.weight = 0;
         for (const auto& observation : observations_transformed) {
             const auto obs_x = observation.x;
             const auto obs_y = observation.y;
@@ -206,16 +206,17 @@ void ParticleFilter::updateWeights(double sensor_range, const std::array<double,
             const auto exponent = square(obs_x - landmark_x) * one_over_two_sig_x_sq
                                 + square(obs_y - landmark_y) * one_over_two_sig_y_sq;
             const auto weight = gauss_norm * exp(-exponent);
-            assert(weight >= 0.0);
 
-            // Update the particle.
-            particle.weight *= weight;
+            // Update the particle. Note that rather than multiplying probabilities,
+            // we're adding the logarithm. Although it incurs a runtime overhead of taking the
+            // log and then using the exponential, it'll improve numerical stability.
+            particle.weight += log(weight);
             associations.push_back(closest_landmark.landmark_id);
-            sense_x.push_back(static_cast<double>(closest_landmark.x));
-            sense_y.push_back(static_cast<double>(closest_landmark.y));
+            sense_x.push_back(closest_landmark.x);
+            sense_y.push_back(closest_landmark.y);
         }
 
-        assert(particle.weight >= 0.0);
+        particle.weight = exp(particle.weight);
         setAssociations(particle, associations, sense_x, sense_y);
         weights.push_back(particle.weight);
     }
@@ -244,7 +245,7 @@ void ParticleFilter::resample() {
     particles = resampled;
 }
 
-Particle& ParticleFilter::setAssociations(Particle &particle, const std::vector<int> &associations,
+Particle& ParticleFilter::setAssociations(Particle &particle, const std::vector<size_t> &associations,
                                           const std::vector<double> &sense_x, const std::vector<double> &sense_y) {
     //particle: the particle to assign each listed association, and association's (x,y) world coordinates mapping to
     // associations: The landmark id that goes along with each listed association
@@ -258,7 +259,7 @@ Particle& ParticleFilter::setAssociations(Particle &particle, const std::vector<
 }
 
 string ParticleFilter::getAssociations(const Particle& best) {
-    vector<int> v = best.associations;
+    vector<size_t> v = best.associations;
     stringstream ss;
     copy(v.begin(), v.end(), ostream_iterator<int>(ss, " "));
     string s = ss.str();

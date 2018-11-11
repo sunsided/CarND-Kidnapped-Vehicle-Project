@@ -19,7 +19,7 @@ struct Particle {
     double y;
     double theta;
     double weight;
-    std::vector<int> associations;
+    std::vector<size_t> associations;
     std::vector<double> sense_x;
     std::vector<double> sense_y;
 };
@@ -100,7 +100,7 @@ public:
     * Set a particles list of associations, along with the associations calculated world x,y coordinates
     * This can be a very useful debugging tool to make sure transformations are correct and associations correctly connected
     */
-    Particle& setAssociations(Particle &particle, const std::vector<int> &associations,
+    Particle& setAssociations(Particle &particle, const std::vector<size_t> &associations,
                               const std::vector<double> &sense_x, const std::vector<double> &sense_y);
 
 
