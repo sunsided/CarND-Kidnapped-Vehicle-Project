@@ -33,7 +33,6 @@ void ParticleFilter::init(double x, double y, double theta, const std::array<dou
 
     // We make sure we don't add more particles than expected.
     particles.clear();
-    weights.clear();
 
     // By setting the mean of the random noise distribution to the specified GPS coordinates,
     // we create random particles centered around our GPS position estimate.
@@ -57,7 +56,6 @@ void ParticleFilter::init(double x, double y, double theta, const std::array<dou
                 .weight = initial_weight
         };
         particles.push_back(particle_temp);
-        weights.push_back(initial_weight);
     }
 
     is_initialized = true;
@@ -164,9 +162,6 @@ void ParticleFilter::updateWeights(double sensor_range, const std::array<double,
     const double one_over_two_sig_x_sq = 1.0 / (2.0 * square(sigma_x));
     const double one_over_two_sig_y_sq = 1.0 / (2.0 * square(sigma_y));
 
-    // Remove old weights, since we're going to determine new ones.
-    weights.clear();
-
     for (auto &particle : particles) {
         // For further processing, keep only those landmarks actually within sensor range.
         const auto landmarks_in_range = getLandmarksInRange(sensor_range, map_landmarks, particle);
@@ -218,7 +213,6 @@ void ParticleFilter::updateWeights(double sensor_range, const std::array<double,
 
         particle.weight = exp(particle.weight);
         setAssociations(particle, associations, sense_x, sense_y);
-        weights.push_back(particle.weight);
     }
 }
 
