@@ -17,11 +17,12 @@
 #include <iterator>
 
 #include "particle_filter.h"
+#include "ssrc/spatial/kd_tree.h"
 
 using namespace std;
 
 ParticleFilter::ParticleFilter()
-    : num_particles(100), is_initialized(false)
+    : num_particles(1000), is_initialized(false)
     { }
 
 void ParticleFilter::init(double x, double y, double theta, const std::array<double, 3>& std_pos) {
@@ -100,6 +101,39 @@ void ParticleFilter::prediction(double delta_t, const std::array<double, 3>& std
 }
 
 void ParticleFilter::dataAssociation(const std::vector<LandmarkObs>& predicted, std::vector<LandmarkObs>& observations) {
+#ifdef USE_ASSOCIATION_NAIVE
+    return dataAssociationNaive(predicted, observations);
+#else // USE_ASSOCIATION_NAIVE
+    return dataAssociationTree(predicted, observations);
+#endif // USE_ASSOCIATION_NAIVE
+}
+
+void ParticleFilter::dataAssociationTree(const std::vector<LandmarkObs>& predicted, std::vector<LandmarkObs>& observations) {
+    typedef std::array<double, 2> Point;
+    typedef ssrc::spatial::kd_tree<Point, size_t> Tree;
+
+    Tree tree;
+    for (auto l = 0U; l < predicted.size(); ++l) {
+        const auto landmark = predicted[l];
+        Point pt { landmark.x, landmark.y };
+        tree[pt] = l;
+    }
+
+    for (auto &observation : observations) {
+        Point query { observation.x, observation.y };
+        auto range = tree.find_nearest_neighbors(query, 1);
+        for (Tree::knn_iterator it = range.first; it != range.second; ++it) {
+            std::pair<Point, size_t> p = *it;
+            observation.landmark_id = p.second;
+
+            // There is only one match.
+            // TODO: Use find_nearest_neighbor() (instead of _neighbors())
+            break;
+        }
+    }
+}
+
+void ParticleFilter::dataAssociationNaive(const std::vector<LandmarkObs>& predicted, std::vector<LandmarkObs>& observations) {
     // To find the predicted measurement that is closest to each observed measurement,
     // we're going to run a brute force comparison between all observations and predicted observations.
     // A naive implementation like this gets the job done, but is terrible inefficient for large number of landmarks.

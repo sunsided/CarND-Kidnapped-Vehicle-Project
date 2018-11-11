@@ -128,6 +128,24 @@ public:
 private:
 
     /**
+    * dataAssociation Finds which observations correspond to which landmarks (likely by using
+    *   a nearest-neighbors data association).
+    * @param predicted Vector of predicted landmark observations
+    * @param observations Vector of landmark observations
+    */
+    [[maybe_unused]]
+    void dataAssociationTree(const std::vector<LandmarkObs>& predicted, std::vector<LandmarkObs> &observations);
+
+    /**
+    * dataAssociation Finds which observations correspond to which landmarks (likely by using
+    *   a nearest-neighbors data association).
+    * @param predicted Vector of predicted landmark observations
+    * @param observations Vector of landmark observations
+    */
+    [[maybe_unused]]
+    void dataAssociationNaive(const std::vector<LandmarkObs>& predicted, std::vector<LandmarkObs> &observations);
+
+    /**
      * Returns all landmarks within sensor range of the particle.
      * @param sensor_range Range [m] of sensor
      * @param map Map class containing map landmarks

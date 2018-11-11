@@ -7,10 +7,16 @@ add_definitions(-std=c++11)
 set(CXX_FLAGS "-Wall")
 set(CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 
+option(USE_ASSOCIATION_NAIVE "Use brute-force nearest neighbors for association." OFF)
+if(USE_ASSOCIATION_NAIVE)
+    add_definitions(-DASSOCIATION_NAIVE=1)
+endif(USE_ASSOCIATION_NAIVE)
+
 set(sources src/particle_filter.cpp src/main.cpp)
 
+include_directories(vendor/libssrckdtree)
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 include_directories(/usr/local/include)
 include_directories(/usr/local/opt/openssl/include)
