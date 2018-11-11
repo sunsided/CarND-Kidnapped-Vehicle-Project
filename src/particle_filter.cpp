@@ -119,10 +119,10 @@ vector<LandmarkObs> ParticleFilter::getLandmarksInRange(double sensor_range, con
         if (landmark_dist_sq > sensor_range_sq) continue;
 
         landmarks_in_range.push_back({
-                                             .landmark_id = map_landmark.id_i,
-                                             .x = map_landmark.x_f,
-                                             .y = map_landmark.y_f
-                                     });
+            .landmark_id = map_landmark.id_i,
+            .x = map_landmark.x_f,
+            .y = map_landmark.y_f
+        });
     }
     return landmarks_in_range;
 }
