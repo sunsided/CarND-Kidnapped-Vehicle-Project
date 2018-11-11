@@ -73,7 +73,10 @@ void ParticleFilter::prediction(double delta_t, const std::array<double, 3>& std
     const auto velocity_dt = velocity * delta_t;
     const auto velocity_over_yaw_rate = nonzero_yaw ? velocity/yaw_rate : 0;
 
-    for (auto &particle : particles) {
+    #pragma omp parallel for
+    // for (auto &particle : particles) {
+    for (size_t p = 0U; p < particles.size(); ++p) {
+        auto& particle = particles[p];
         auto x = particle.x;
         auto y = particle.y;
         auto theta = particle.theta;

@@ -8,12 +8,7 @@ set(CXX_FLAGS "-Wall")
 set(CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 
 set(NUM_PARTICLES 1000 CACHE STRING "The number of particles to use.")
-add_compile_definitions(NUM_PARTICLES=${NUM_PARTICLES})
-
 option(USE_ASSOCIATION_NAIVE "Use brute-force nearest neighbors for association." OFF)
-if(USE_ASSOCIATION_NAIVE)
-    add_compile_definitions(ASSOCIATION_NAIVE=1)
-endif(USE_ASSOCIATION_NAIVE)
 
 set(sources src/particle_filter.cpp src/main.cpp src/data_association_libssrckdtree.cpp)
 
@@ -32,6 +27,16 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 add_executable(particle_filter ${sources})
 
-
 target_link_libraries(particle_filter z ssl uv uWS)
 
+target_compile_definitions(particle_filter PRIVATE NUM_PARTICLES=${NUM_PARTICLES})
+if(USE_ASSOCIATION_NAIVE)
+    target_compile_definitions(particle_filter PRIVATE ASSOCIATION_NAIVE=1)
+endif(USE_ASSOCIATION_NAIVE)
+
+find_package(OpenMP)
+if (OPENMP_FOUND)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+endif()
