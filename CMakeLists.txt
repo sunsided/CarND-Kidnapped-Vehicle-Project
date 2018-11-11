@@ -7,12 +7,15 @@ add_definitions(-std=c++11)
 set(CXX_FLAGS "-Wall")
 set(CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 
+set(NUM_PARTICLES 1000 CACHE STRING "The number of particles to use.")
+add_compile_definitions(NUM_PARTICLES=${NUM_PARTICLES})
+
 option(USE_ASSOCIATION_NAIVE "Use brute-force nearest neighbors for association." OFF)
 if(USE_ASSOCIATION_NAIVE)
-    add_definitions(-DASSOCIATION_NAIVE=1)
+    add_compile_definitions(ASSOCIATION_NAIVE=1)
 endif(USE_ASSOCIATION_NAIVE)
 
-set(sources src/particle_filter.cpp src/main.cpp)
+set(sources src/particle_filter.cpp src/main.cpp src/data_association_libssrckdtree.cpp)
 
 include_directories(vendor/libssrckdtree)
 
