@@ -64,8 +64,6 @@ void ParticleFilter::init(double x, double y, double theta, const std::array<dou
 }
 
 void ParticleFilter::prediction(double delta_t, const std::array<double, 3>& std_pos, double velocity, double yaw_rate) {
-    // TODO: Add measurements to each particle and add random Gaussian noise.
-
     default_random_engine gen;
 
     const auto nonzero_yaw = fabs(yaw_rate) > 0;
@@ -76,7 +74,7 @@ void ParticleFilter::prediction(double delta_t, const std::array<double, 3>& std
     #pragma omp parallel for
     // for (auto &particle : particles) {
     for (size_t p = 0U; p < particles.size(); ++p) {
-        auto& particle = particles[p];
+        auto& particle = particles.at(p);
         auto x = particle.x;
         auto y = particle.y;
         auto theta = particle.theta;
@@ -105,11 +103,11 @@ void ParticleFilter::prediction(double delta_t, const std::array<double, 3>& std
 }
 
 void ParticleFilter::dataAssociation(const std::vector<LandmarkObs>& predicted, std::vector<LandmarkObs>& observations) {
-#ifdef USE_ASSOCIATION_NAIVE
+#ifdef ASSOCIATION_NAIVE
     return dataAssociationNaive(predicted, observations);
-#else // USE_ASSOCIATION_NAIVE
+#else // ASSOCIATION_NAIVE
     return dataAssociationTree(predicted, observations);
-#endif // USE_ASSOCIATION_NAIVE
+#endif // ASSOCIATION_NAIVE
 }
 
 vector<LandmarkObs> ParticleFilter::getLandmarksInRange(double sensor_range, const Map &map_landmarks, const Particle& particle) const {

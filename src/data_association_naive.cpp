@@ -9,16 +9,13 @@ void ParticleFilter::dataAssociationNaive(const std::vector<LandmarkObs>& predic
     // we're going to run a brute force comparison between all observations and predicted observations.
     // A naive implementation like this gets the job done, but is terrible inefficient for large number of landmarks.
     // What helps us here is that we only look through all landmarks actually in sensor range.
-    //
-    // An alternative solution would be to sort predicted observations into a quadtree in order to quickly
-    // obtain candidate answers, then run a brute force match on the candidates.
-    // We'll leave that as an optimization for a later iteration.
-    // TODO: Optimize k-NN match performance
     const auto max_dist = std::numeric_limits<double>::max();
     const auto num_predictions = predicted.size();
 
-    // TODO: Parallelize outer loop using OpenMP for a simple performance improvement.
-    for (auto &observation : observations) {
+    #pragma omp parallel for
+    // for (auto &observation : observations) {
+    for (auto o = 0U; o < observations.size(); ++o) {
+        auto& observation = observations.at(o);
         double min_dist = max_dist;
         for (auto l = 0U; l < num_predictions; ++l) {
             const auto& landmark = predicted[l];

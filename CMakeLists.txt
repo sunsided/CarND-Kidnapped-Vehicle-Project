@@ -10,7 +10,7 @@ set(CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 set(NUM_PARTICLES 1000 CACHE STRING "The number of particles to use.")
 option(USE_ASSOCIATION_NAIVE "Use brute-force nearest neighbors for association." OFF)
 
-set(sources src/particle_filter.cpp src/main.cpp src/data_association_libssrckdtree.cpp)
+set(sources src/particle_filter.cpp src/main.cpp src/data_association_libssrckdtree.cpp src/data_association_naive.cpp)
 
 include_directories(vendor/libssrckdtree)
 
@@ -23,7 +23,6 @@ link_directories(/usr/local/opt/openssl/lib)
 link_directories(/usr/local/Cellar/libuv/1*/lib)
 
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
-
 
 add_executable(particle_filter ${sources})
 
