@@ -9,11 +9,17 @@ This project implements a 2 dimensional particle filter in C++. The particle fil
 localization information (analogous to what a GPS would provide). At each time step your filter will also get 
 observation and control data.
 
+![Screenshot](images/screenshot.png)
+
+Note that despite what the name suggests, due to the way it is implemented, the particle filter won't work well (or at all) in situations 
+where the vehicle is indeed kidnapped during the simulation. Speficially, particles are only resampled with replacement from the
+previous generation; however, no _new_ particles will ever be created at random. This means that after convergence on a good pose
+estimate, the filter would need to be reinitialized completely to handle a kidnapping situation. In this case, each generation's particle
+weights should be low, so this situation could at least be detected.
+
 This code makes use of the [libssrckdtree](https://www.savarese.com/software/libssrckdtree/) library
 for aligning measurements and landmarks. The code is bundled in the `vendor/libssrckdtree` directory
 and is licensed under an Apache 2.0 License.
-
-![Screenshot](images/screenshot.png)
 
 ## Running the Code
 This project involves the Term 2 Simulator which can be downloaded [here](https://github.com/udacity/self-driving-car-sim/releases)
