@@ -6,7 +6,6 @@
  */
 
 #include <cassert>
-#include <random>
 #include <algorithm>
 #include <iostream>
 #include <numeric>
@@ -21,7 +20,7 @@
 using namespace std;
 
 ParticleFilter::ParticleFilter()
-    : num_particles(NUM_PARTICLES), is_initialized(false)
+    : num_particles{NUM_PARTICLES}, is_initialized{false}, gen{}
     {
         static_assert(NUM_PARTICLES > 0, "The number of particles must be a positive integer.");
     }
@@ -36,7 +35,6 @@ void ParticleFilter::init(double x, double y, double theta, const std::array<dou
 
     // By setting the mean of the random noise distribution to the specified GPS coordinates,
     // we create random particles centered around our GPS position estimate.
-    default_random_engine gen;
     normal_distribution<double> dist_x(x, std_pos[0]);
     normal_distribution<double> dist_y(y, std_pos[1]);
     normal_distribution<double> dist_theta(theta, std_pos[2]);
@@ -62,8 +60,6 @@ void ParticleFilter::init(double x, double y, double theta, const std::array<dou
 }
 
 void ParticleFilter::prediction(double delta_t, const std::array<double, 3>& std_pos, double velocity, double yaw_rate) {
-    default_random_engine gen;
-
     const auto nonzero_yaw = fabs(yaw_rate) > 0;
     const auto yaw_rate_dt = yaw_rate * delta_t;
     const auto velocity_dt = velocity * delta_t;

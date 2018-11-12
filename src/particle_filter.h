@@ -9,6 +9,7 @@
 #ifndef PARTICLE_FILTER_H_
 #define PARTICLE_FILTER_H_
 
+#include <random>
 #include <array>
 #include "helper_functions.h"
 
@@ -36,6 +37,9 @@ class ParticleFilter {
 
     // Set of current particles
     std::vector<Particle> particles;
+
+    // The random number generator
+    std::default_random_engine gen;
 
 public:
 
