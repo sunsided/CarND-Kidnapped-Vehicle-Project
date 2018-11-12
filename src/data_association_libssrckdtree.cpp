@@ -5,7 +5,7 @@
 using namespace std;
 using namespace ssrc;
 
-#if ASSOCIATION_NAIVE
+#if !ASSOCIATION_NAIVE
 
 void ParticleFilter::dataAssociationTree(const std::vector<LandmarkObs>& predicted, std::vector<LandmarkObs>& observations) {
     typedef std::array<double, 2> Point;
