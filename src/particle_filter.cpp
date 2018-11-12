@@ -60,7 +60,8 @@ void ParticleFilter::init(double x, double y, double theta, const std::array<dou
 }
 
 void ParticleFilter::prediction(double delta_t, const std::array<double, 3>& std_pos, double velocity, double yaw_rate) {
-    const auto nonzero_yaw = fabs(yaw_rate) > 0;
+    const auto epsilon = 1E-5;
+    const auto nonzero_yaw = fabs(yaw_rate) >= epsilon;
     const auto yaw_rate_dt = yaw_rate * delta_t;
     const auto velocity_dt = velocity * delta_t;
     const auto velocity_over_yaw_rate = nonzero_yaw ? velocity/yaw_rate : 0;
