@@ -101,7 +101,7 @@ void ParticleFilter::prediction(double delta_t, const std::array<double, 3>& std
 }
 
 void ParticleFilter::dataAssociation(const std::vector<LandmarkObs>& predicted, std::vector<LandmarkObs>& observations) {
-#ifdef ASSOCIATION_NAIVE
+#if ASSOCIATION_NAIVE
     return dataAssociationNaive(predicted, observations);
 #else // ASSOCIATION_NAIVE
     return dataAssociationTree(predicted, observations);
