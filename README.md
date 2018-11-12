@@ -9,11 +9,11 @@ This project implements a 2 dimensional particle filter in C++. The particle fil
 localization information (analogous to what a GPS would provide). At each time step your filter will also get 
 observation and control data.
 
-![Screenshot](images/screenshot.png)
-
 This code makes use of the [libssrckdtree](https://www.savarese.com/software/libssrckdtree/) library
 for aligning measurements and landmarks. The code is bundled in the `vendor/libssrckdtree` directory
 and is licensed under an Apache 2.0 License.
+
+![Screenshot](images/screenshot.png)
 
 ## Running the Code
 This project involves the Term 2 Simulator which can be downloaded [here](https://github.com/udacity/self-driving-car-sim/releases)
@@ -30,6 +30,14 @@ project top directory.
 3. `cmake ..`
 4. `make`
 5. `./particle_filter`
+
+
+If, for whatever reason, you do not want to build using libssrc, e.g. because it requires libraries not available on your system, you can enable "naive"
+keypoint matching mode by running CMake as follows:
+
+3. `cmake -DUSE_ASSOCIATION_NAIVE=On -DNUM_PARTICLES=100 ..`
+
+Note that the number of particles will be reduced to improve performance.
 
 Alternatively some scripts have been included to streamline this process, these can be leveraged by executing the following in the top directory of the project:
 
