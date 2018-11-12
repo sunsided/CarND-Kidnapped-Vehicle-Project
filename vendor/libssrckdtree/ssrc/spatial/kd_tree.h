@@ -27,7 +27,7 @@
 #include <ssrc/spatial/detail/kd_tree_node.h>
 #include <ssrc/spatial/detail/kd_tree_nearest_neighbor.h>
 
-#ifdef LIBSSRCKDTREE_HAVE_BOOST
+#if LIBSSRCKDTREE_HAVE_BOOST
 #include <ssrc/spatial/detail/kd_tree_nearest_neighbors.h>
 #endif
 
@@ -874,7 +874,7 @@ public:
     return iterator(nn.find(_root, point, omit_query_point));
   }
 
-#ifdef LIBSSRCKDTREE_HAVE_BOOST
+#if LIBSSRCKDTREE_HAVE_BOOST
   typedef
   typename detail::kd_tree_nearest_neighbors<traits, double>::iterator
   knn_iterator;
